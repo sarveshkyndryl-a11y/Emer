@@ -1,20 +1,13 @@
 let accessToken: string | null = null;
-let role: string | null = null;
 
-export function setAuth(token: string, userRole: string) {
-  accessToken = token;
-  role = userRole;
-}
-
-export function clearAuth() {
-  accessToken = null;
-  role = null;
-}
-
-export function getAccessToken() {
-  return accessToken;
-}
-
-export function getRole() {
-  return role;
-}
+export const tokenMemory = {
+  get(): string | null {
+    return accessToken;
+  },
+  set(token: string) {
+    accessToken = token;
+  },
+  clear() {
+    accessToken = null;
+  },
+};

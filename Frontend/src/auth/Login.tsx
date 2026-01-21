@@ -15,7 +15,8 @@ export default function Login() {
     try {
       const data = await login(email, password);
       loginSuccess(data.accessToken, data.role);
-
+      console.log("User Role:", data.role);
+      console.log("Access Token:", data.accessToken);
       if (data.role === "admin") navigate(ROUTES.ADMIN);
       else if (data.role === "support") navigate(ROUTES.SUPPORT);
       else navigate(ROUTES.CUSTOMER);

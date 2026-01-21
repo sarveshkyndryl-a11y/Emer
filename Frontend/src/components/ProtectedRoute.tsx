@@ -10,10 +10,20 @@ export default function ProtectedRoute({
   role: Role;
   children: ReactNode;
 }) {
-  const auth = useAuth();
+  const { role: userRole, loading } = useAuth();
 
-  if (!auth.role) return <Navigate to="/login" replace />;
-  if (auth.role !== role) return <Navigate to="/404" replace />;
+  // ⛔ CRITICAL: wait for auth bootstrap
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!userRole) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (userRole !== role) {
+    return <Navigate to="/404" replace />;
+  }
 
   return <>{children}</>;
 }

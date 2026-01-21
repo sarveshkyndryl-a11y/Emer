@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./auth/Login";
 import Admin from "./pages/admin/Dashboard";
+import Customer from "./pages/customer/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ProtectedLayout from "./components/ProtectedLayout";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./auth/AuthProvider";
 
@@ -12,28 +12,33 @@ export default function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* Default redirect */}
+          {/* default */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Public route */}
+          {/* public */}
           <Route path="/login" element={<Login />} />
 
-          {/* Protected routes */}
-          <Route element={<ProtectedLayout />}>
+          {/* protected */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute role="admin">
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute role="admin">
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
+          <Route
+            path="/customer"
+            element={
+              <ProtectedRoute role="customer">
+                <Customer />
+              </ProtectedRoute>
+            }
+          />
 
-            {/* Add more protected routes here */}
-          </Route>
-
-          {/* 404 fallback */}
+          {/* 404 */}
+          <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
 
         </Routes>

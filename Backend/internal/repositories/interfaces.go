@@ -25,8 +25,10 @@ type UserRepository interface {
 }
 
 type RefreshTokenRepository interface {
-	Store(userID uuid.UUID, hash string, exp time.Time) error
+	Store(userID uuid.UUID, hash string, exp time.Time) (uuid.UUID, error)
 	GetValid(hash string) (*models.RefreshToken, error)
+	Rotate(old *models.RefreshToken, newHash string, exp time.Time) error
 	Revoke(tokenID uuid.UUID) error
 	RevokeAll(userID uuid.UUID) error
 }
+

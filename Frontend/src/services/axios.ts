@@ -1,16 +1,16 @@
 import axios from "axios";
-import { getAccessToken, setAuth, clearAuth } from "../utils/tokenMemory";
+import { tokenMemory } from "../utils/tokenMemory";
 import { refreshToken } from "./auth.api";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  withCredentials: true, // 🔑 sends refresh_token cookie
+  withCredentials: true,
 });
 
 /* Attach access token */
 api.interceptors.request.use((config) => {
-  const token = getAccessToken();
-  if (token) {
+  const token = tokenMemory.get();
+  if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -24,21 +24,26 @@ api.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      !originalRequest?._retry
     ) {
       originalRequest._retry = true;
 
       try {
-        const data = await refreshToken();
-        setAuth(data.accessToken, data.role);
+        const { accessToken } = await refreshToken();
 
-        originalRequest.headers.Authorization =
-          `Bearer ${data.accessToken}`;
+        // ✅ only update token memory
+        tokenMemory.set(accessToken);
+
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization =
+            `Bearer ${accessToken}`;
+        }
 
         return api(originalRequest);
-      } catch {
-        clearAuth();
-        window.location.href = "/login";
+      } catch (err) {
+        // ✅ let AuthProvider + route guards decide
+        tokenMemory.clear();
+        return Promise.reject(err);
       }
     }
 

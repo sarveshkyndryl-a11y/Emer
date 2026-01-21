@@ -26,7 +26,7 @@ func (h *AuthHandler) issueTokens(
 	refreshHash := services.HashToken(refreshToken)
 
 	// store refresh token (hashed)
-	err = h.tokenRepo.Store(
+	_, err = h.tokenRepo.Store(
 		uuid.MustParse(userID),
 		refreshHash,
 		time.Now().Add(7*24*time.Hour),
@@ -36,19 +36,19 @@ func (h *AuthHandler) issueTokens(
 		return
 	}
 
-	// set secure cookie
+	// set refresh token cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
 		Value:    refreshToken,
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
-		Path:     "/auth/refresh",
+		Secure:   false,                 // true in prod (HTTPS)
+		SameSite: http.SameSiteNoneMode, // required for cross-site
+		Path:     "/",
 	})
 
 	// response
 	_ = json.NewEncoder(w).Encode(map[string]string{
 		"access_token": accessToken,
+		"role":         role,
 	})
 }
-
