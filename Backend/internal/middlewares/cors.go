@@ -7,7 +7,7 @@ func CORS(next http.Handler) http.Handler {
 
 		// Allow frontend origin
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		// Allow headers & methods
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")

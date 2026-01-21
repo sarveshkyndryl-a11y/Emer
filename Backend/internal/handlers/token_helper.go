@@ -42,7 +42,7 @@ func (h *AuthHandler) issueTokens(
 		Value:    refreshToken,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 		Path:     "/auth/refresh",
 	})
 
